@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name = 'YOURAPP',
+    name = 'paymaster',
     version = '1.0.0',
     packages = find_packages(),
     install_requires = [
@@ -12,7 +12,7 @@ setup(
     url = 'http://cottagelabs.com/',
     author = 'Cottage Labs',
     author_email = 'us@cottagelabs.com',
-    description = 'DESCRIBE YOUR APP',
+    description = 'Payment and partner share management',
     classifiers = [
         'Development Status :: 3 - Alpha',
         'Environment :: Console',
