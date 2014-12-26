@@ -1,5 +1,6 @@
 from octopus.lib import dataobj
 from service import dao
+from octopus.modules.crud.models import ES_CRUD_Wrapper
 
 class Payment(dataobj.DataObj, dao.PaymentDAO):
     """
@@ -64,3 +65,29 @@ class Payment(dataobj.DataObj, dao.PaymentDAO):
             }
         }
     }
+
+class CRUDPayment(ES_CRUD_Wrapper):
+    INNER_TYPE = Payment
+
+    def __init__(self, raw=None):
+        if raw is not None:
+            # remove any disallowed fields
+            if "id" in raw:
+                del raw["id"]
+            if "created_date" in raw:
+                del raw["created_date"]
+            if "last_updated" in raw:
+                del raw["last_updated"]
+
+        super(CRUDPayment, self).__init__(raw)
+
+    def update(self, data):
+        # carry over the data from the old object
+        data["id"] = self.inner.id
+        data["created_date"] = self.inner.created_date
+
+        # remove any disallowed fields
+        if "last_updated" in data:
+            del data["last_updated"]
+
+        super(CRUDPayment, self).update(data)

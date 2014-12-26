@@ -41,8 +41,8 @@ app.register_blueprint(configjs)
 from octopus.modules.es.autocomplete import blueprint as autocomplete
 app.register_blueprint(autocomplete, url_prefix='/autocomplete')
 
-from service.views.api import blueprint as api
-app.register_blueprint(api, url_prefix="/api")
+from octopus.modules.crud.api import blueprint as crud
+app.register_blueprint(crud, url_prefix="/api")
 
 @app.errorhandler(404)
 def page_not_found(e):

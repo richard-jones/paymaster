@@ -1,1 +1,1 @@
-from service.models.paymaster import Payment
+from service.models.paymaster import Payment, CRUDPayment
