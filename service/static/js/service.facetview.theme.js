@@ -18,10 +18,10 @@ jQuery(document).ready(function($) {
     var facets = []
     facets.push({'field': 'last_updated', 'display': 'Last Updated'})
 
-    $('#facetview').facetview({
+    $('#payments').facetview({
         debug: false,
-        search_url : query_endpoint, // defined in the template which calls this
-        page_size : 25,
+        search_url : "/query",
+        page_size : 100,
         facets : facets,
         search_sortby : [
             {'display':'Last Modified','field':'last_updated'},
@@ -30,8 +30,7 @@ jQuery(document).ready(function($) {
         searchbox_fieldselect : [
             {'display':'ID','field':'id'}
         ],
-        render_result_record : discoveryRecordView,
-
+        render_result_record : discoveryRecordView
     });
 
 });
