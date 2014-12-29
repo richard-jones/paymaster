@@ -47,6 +47,12 @@ app.register_blueprint(crud, url_prefix="/api")
 from octopus.modules.es.query import blueprint as query
 app.register_blueprint(query, url_prefix="/query")
 
+@app.route("/form")
+def form():
+    from service.payment import PaymentFormContext
+    fc = PaymentFormContext()
+    return fc.render_template()
+
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template('errors/404.html'), 404

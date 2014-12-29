@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<form class="form-horizontal">
+    <div class="row">
+        <div class="col-md-6">
+            {% autoescape off %}
+            {{ form_context.render_field_group("basic_info") }}
+            {{ form_context.render_field_group("total") }}
+            {% endautoescape %}
+        </div>
+        <div class="col-md-6">
+            <div class="row"><div class="col-md-12">
+            <div id="expenses_list">
+                <div id="expenses_template">
+                    {% autoescape off %}
+                    {{ form_context.render_field_group("expenses") }}
+                    {% endautoescape %}
+                </div>
+            </div>
+            <button id="add_expenses" class="btn btn-info pull-right">Add More Expenses</button>
+            </div></div>
+
+            <div class="row"><div class="col-md-12">
+            <div id="shares_list">
+                <div id="shares_template">
+                    {% autoescape off %}
+                    {{ form_context.render_field_group("shares") }}
+                    {% endautoescape %}
+                </div>
+            </div>
+            <button id="add_shares" class="btn btn-info pull-right">Add More Shares</button>
+            </div></div>
+
+            <div class="row"><div class="col-md-12">
+            <div id="central_list">
+                <div id="central_template">
+                    {% autoescape off %}
+                    {{ form_context.render_field_group("central") }}
+                    {% endautoescape %}
+                </div>
+            </div>
+            <button id="add_central" class="btn btn-info pull-right">Add More Central Costs</button>
+            </div></div>
+        </div>
+    </div>
+</form>
+
+{% endblock %}
+
+{% block extra_js_bottom %}
+<script type="text/javascript">
+$(document).ready(function() {
+    $("#add_expenses").click(function(event) {
+        event.preventDefault()
+        var source = $("#expenses_template").html();
+        var n = 1;
+        $("#expenses_list").children().each(function() {
+            var c = $(this).attr("id");
+
+        });
+
+        // find the highest number in the expenses list
+
+        // append a new section with a new, higher number (and hide it)
+
+        // select that section, then append a copy of the template
+
+        // go through each field and label in the new section, and set the form field name to the correct number
+
+        // show the new section
+    })
+})
+</script>
+{% endblock %}
