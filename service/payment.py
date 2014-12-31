@@ -180,10 +180,10 @@ class PaymentRenderer(Renderer):
             "total" : {
                 "helper" : "bs3_horizontal",
                 "wrappers" : [],
-                "label_width" : 4,
-                "control_width" : 8,
+                "label_width" : 2,
+                "control_width" : 10,
                 "fields" : [
-                    {"available" : {}}
+                    {"available" : {"attributes" : {"class" : "input-small"}}}
                 ]
             }
         }
