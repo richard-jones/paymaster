@@ -2,7 +2,7 @@
 
 {% block content %}
 
-<form class="form-horizontal">
+<form class="form-horizontal" id="payment-form">
     <div class="row">
         <div class="col-md-6">
             {% autoescape off %}
@@ -22,8 +22,6 @@
             </div>
             <button id="add_expenses" class="btn btn-info pull-right" style="margin-bottom: 20px">Add More Expenses</button>
             </div></div>
-
-
         </div>
     </div>
 
@@ -75,12 +73,66 @@
 <script type="text/javascript">
 $(document).ready(function() {
 
+    octopus.page = {};
+    octopus.page.data = {};
+    
+    var form_xwalk = {
+        "ref" : "ref",
+        "description" : "description",
+        "invoice_date" : "invoice_date",
+        "expected_amount" : "expected_amount",
+        "actual_amount" : "actual_amount",
+        "vat_pc" : "vat_pc",
+        "overhead_pc" : "overhead_pc",
+        "overhead" : "overhead",
+        "available" : "available",
+        "notes" : "notes",
+        "state" : "state"
+    };
+
+    function destroyParsley() {
+        if (octopus.page.payment_form) {
+            octopus.page.payment_form.destroy();
+        }
+    }
+
+    function bounceParsley() {
+        if (octopus.page.payment_form) {
+            octopus.page.payment_form.destroy();
+        }
+        octopus.page.payment_form = $("#payment-form").parsley();
+        $("[data-parsley-type]").change(function() {
+            var pform = octopus.page.payment_form;
+            var id = $(this).attr("id");
+            for (var i = 0; i < pform.fields.length; i++) {
+                if (pform.fields[i]["$element"].attr("id") == id) {
+                    var field = pform.fields[i];
+                    field.validate();
+                }
+            }
+            readForm();
+        })
+    }
+
+    function readForm() {
+        var form = {};
+        for (var field in form_xwalk) {
+            var val = $("[name='" + field + "']").val();
+            var target = form_xwalk[field];
+            form[target] = val;
+        }
+        octopus.page.data = form;
+    }
+
     octopus.forms.bindRepeatable({
         button_selector : "#add_expenses",
         list_selector: "#expenses_list",
         entry_prefix: "expenses",
         enable_remove: true,
-        remove_selector: ".remove-expenses"
+        remove_selector: ".remove-expenses",
+        before_callback: destroyParsley,
+        more_callback: bounceParsley,
+        remove_callback: bounceParsley
     });
 
     octopus.forms.bindRepeatable({
@@ -88,7 +140,10 @@ $(document).ready(function() {
         list_selector: "#shares_list",
         entry_prefix: "shares",
         enable_remove: true,
-        remove_selector: ".remove-shares"
+        remove_selector: ".remove-shares",
+        before_callback: destroyParsley,
+        more_callback: bounceParsley,
+        remove_callback: bounceParsley
     });
 
     octopus.forms.bindRepeatable({
@@ -96,8 +151,13 @@ $(document).ready(function() {
         list_selector: "#central_list",
         entry_prefix: "central",
         enable_remove: true,
-        remove_selector: ".remove-central"
+        remove_selector: ".remove-central",
+        before_callback: destroyParsley,
+        more_callback: bounceParsley,
+        remove_callback: bounceParsley
     });
+
+    bounceParsley();
 
 })
 </script>

@@ -111,16 +111,16 @@ class PaymentRenderer(Renderer):
                 "label_width" : 4,
                 "control_width" : 8,
                 "fields" : [
-                    {"ref" : {}},
+                    {"ref" : {"attributes" : {"data-parsley-required" : "true"}}},
                     {"state" : {}},
                     {"description" : {}},
                     {"invoice_date" : {}},
-                    {"expected_amount" : {"attributes" : {"class" : "input-small"}}},
-                    {"actual_amount" : {"attributes" : {"class" : "input-small"}}},
-                    {"vat_pc" : {"attributes" : {"class" : "input-small"}}},
-                    {"vat" : {"attributes" : {"class" : "input-small"}}},
-                    {"overhead_pc" : {"attributes" : {"class" : "input-small"}}},
-                    {"overhead" : {"attributes" : {"class" : "input-small"}}},
+                    {"expected_amount" : {"attributes" : {"class" : "input-small", "data-parsley-type" : "number"}}},
+                    {"actual_amount" : {"attributes" : {"class" : "input-small", "data-parsley-type" : "number"}}},
+                    {"vat_pc" : {"attributes" : {"class" : "input-small", "data-parsley-type" : "number"}}},
+                    {"vat" : {"attributes" : {"class" : "input-small", "data-parsley-type" : "number"}}},
+                    {"overhead_pc" : {"attributes" : {"class" : "input-small", "data-parsley-type" : "number"}}},
+                    {"overhead" : {"attributes" : {"class" : "input-small", "data-parsley-type" : "number"}}},
                     {"notes" : {}}
                 ]
             },
@@ -134,7 +134,7 @@ class PaymentRenderer(Renderer):
                         "expenses" : {
                             "fields" : [
                                 {"ref" : {}},
-                                {"amount" : {"attributes" : {"class" : "input-small"}}},
+                                {"amount" : {"attributes" : {"class" : "input-small", "data-parsley-type" : "number"}}},
                                 {"allocate_to" : {}}
                             ]
                         }
@@ -151,10 +151,10 @@ class PaymentRenderer(Renderer):
                         "shares" : {
                             "fields" : [
                                 {"who" : {}},
-                                {"pc" : {"attributes" : {"class" : "input-small"}}},
-                                {"share_amount" : {"attributes" : {"class" : "input-small"}}},
-                                {"expenses" : {"attributes" : {"class" : "input-small"}}},
-                                {"total" : {"attributes" : {"class" : "input-small"}}},
+                                {"pc" : {"attributes" : {"class" : "input-small", "data-parsley-type" : "number"}}},
+                                {"share_amount" : {"attributes" : {"class" : "input-small", "data-parsley-type" : "number"}}},
+                                {"expenses" : {"attributes" : {"class" : "input-small", "data-parsley-type" : "number"}}},
+                                {"total" : {"attributes" : {"class" : "input-small", "data-parsley-type" : "number"}}},
                             ]
                         }
                     }
@@ -171,7 +171,7 @@ class PaymentRenderer(Renderer):
                             "fields" : [
                                 {"ref" : {}},
                                 {"description" : {}},
-                                {"amount" : {"attributes" : {"class" : "input-small"}}}
+                                {"amount" : {"attributes" : {"class" : "input-small", "data-parsley-type" : "number"}}}
                             ]
                         }
                     }
@@ -183,38 +183,7 @@ class PaymentRenderer(Renderer):
                 "label_width" : 2,
                 "control_width" : 10,
                 "fields" : [
-                    {"available" : {"attributes" : {"class" : "input-small"}}}
+                    {"available" : {"attributes" : {"class" : "input-small", "data-parsley-type" : "number"}}}
                 ]
             }
         }
-
-
-        """
-        self.FIELD_GROUPS = {
-            "basic_info" : [
-                {"ref" : {"class" : "form-control"}},
-                {"state" : {"class": "form-control"}},
-                {"description" : {"class" : "form-control"}},
-                {"invoice_date" : {"class" : "form-control"}},
-                {"expected_amount" : {"class" : "form-control input-small"}},
-                {"actual_amount" : {"class" : "form-control input-small"}},
-                {"vat_pc" : {"class" : "form-control input-small"}},
-                {"vat" : {"class" : "form-control input-small"}},
-                {"overhead_pc" : {"class" : "form-control input-small"}},
-                {"overhead" : {"class" : "form-control input-small"}},
-                {"notes" : {"class" : "form-control"}}
-            ],
-            "expenses" : [
-                {"expenses" : {"class" : "form-control"}},
-            ],
-            "shares" : [
-                {"shares" : {}}
-            ],
-            "central" : [
-                {"central" : {}}
-            ],
-            "total" : [
-                {"available" : {}}
-            ]
-        }
-        """
