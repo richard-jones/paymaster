@@ -1,13 +1,14 @@
 from wtforms import Form, StringField, TextAreaField, DateField, FloatField, SelectField, validators, FieldList, FormField
 from octopus.modules.form.validate import DataOptional
 from octopus.modules.form.context import FormContext, Renderer
+from octopus.core import app
 
 # All the form definitions
 ##############################################################################################
 
-STATES = [("paid_to_me", "Paid to me"), ("requested", "Requested"), ("paid_to_cl", "Paid to CL"),
-          ("invoiced", "Invoiced"), ("not_invoiced", "Not Invoiced"), ("estimated", "Estimated"),
-          ("not_estimated", "Not Estimated")]
+STATES = [("not_estimated", "Not Estimated"), ("estimated", "Estimated"), ("not_invoiced", "Not Invoiced"),
+          ("invoiced", "Invoiced"), ("paid_to_cl", "Paid to CL"), ("requested", "Requested"),
+          ("paid_to_me", "Paid to me")]
 
 class Expenses(Form):
     ref = StringField("Expense Reference", [validators.DataRequired()])
@@ -32,9 +33,9 @@ class PaymentForm(Form):
     invoice_date = DateField("Invoice Date", [DataOptional()])
     expected_amount = FloatField("Expected Amount", [validators.DataRequired()])
     actual_amount = FloatField("Actual Amount", [DataOptional()])
-    vat_pc = FloatField("VAT %", [DataOptional()])
+    vat_pc = FloatField("VAT %", [DataOptional()], default=app.config.get("DEFAULT_VAT_PC"))
     vat = FloatField("VAT Charges", [DataOptional()])
-    overhead_pc = FloatField("Overhead %", [DataOptional()])
+    overhead_pc = FloatField("Overhead %", [DataOptional()], default=app.config.get("DEFAULT_OVERHEAD_PC"))
     overhead = FloatField("Overhead", [DataOptional()])
     available = FloatField("Available", [DataOptional()])
     notes = TextAreaField("Notes", [DataOptional()])
@@ -115,12 +116,12 @@ class PaymentRenderer(Renderer):
                     {"state" : {}},
                     {"description" : {}},
                     {"invoice_date" : {}},
-                    {"expected_amount" : {"attributes" : {"class" : "input-small", "data-parsley-type" : "number"}}},
-                    {"actual_amount" : {"attributes" : {"class" : "input-small", "data-parsley-type" : "number"}}},
-                    {"vat_pc" : {"attributes" : {"class" : "input-small", "data-parsley-type" : "number"}}},
-                    {"vat" : {"attributes" : {"class" : "input-small", "data-parsley-type" : "number"}}},
-                    {"overhead_pc" : {"attributes" : {"class" : "input-small", "data-parsley-type" : "number"}}},
-                    {"overhead" : {"attributes" : {"class" : "input-small", "data-parsley-type" : "number"}}},
+                    {"expected_amount" : {"attributes" : {"class" : "input-small", "data-parsley-type" : "number", "data-parsley-group" : "calculate"}}},
+                    {"actual_amount" : {"attributes" : {"class" : "input-small", "data-parsley-type" : "number", "data-parsley-group" : "calculate"}}},
+                    {"vat_pc" : {"attributes" : {"class" : "input-small", "data-parsley-type" : "number", "data-parsley-group" : "calculate"}}},
+                    {"vat" : {"attributes" : {"class" : "input-small", "data-parsley-type" : "number", "disabled" : "disabled"}}},
+                    {"overhead_pc" : {"attributes" : {"class" : "input-small", "data-parsley-type" : "number", "data-parsley-group" : "calculate"}}},
+                    {"overhead" : {"attributes" : {"class" : "input-small", "data-parsley-type" : "number", "disabled" : "disabled"}}},
                     {"notes" : {}}
                 ]
             },
@@ -134,7 +135,7 @@ class PaymentRenderer(Renderer):
                         "expenses" : {
                             "fields" : [
                                 {"ref" : {}},
-                                {"amount" : {"attributes" : {"class" : "input-small", "data-parsley-type" : "number"}}},
+                                {"amount" : {"attributes" : {"class" : "input-small", "data-parsley-type" : "number", "data-parsley-group" : "calculate"}}},
                                 {"allocate_to" : {}}
                             ]
                         }
@@ -151,10 +152,10 @@ class PaymentRenderer(Renderer):
                         "shares" : {
                             "fields" : [
                                 {"who" : {}},
-                                {"pc" : {"attributes" : {"class" : "input-small", "data-parsley-type" : "number"}}},
-                                {"share_amount" : {"attributes" : {"class" : "input-small", "data-parsley-type" : "number"}}},
-                                {"expenses" : {"attributes" : {"class" : "input-small", "data-parsley-type" : "number"}}},
-                                {"total" : {"attributes" : {"class" : "input-small", "data-parsley-type" : "number"}}},
+                                {"pc" : {"attributes" : {"class" : "input-small", "data-parsley-type" : "number", "data-parsley-group" : "calculate"}}},
+                                {"share_amount" : {"attributes" : {"class" : "input-small", "data-parsley-type" : "number", "disabled" : "disabled"}}},
+                                {"expenses" : {"attributes" : {"class" : "input-small", "data-parsley-type" : "number", "disabled" : "disabled"}}},
+                                {"total" : {"attributes" : {"class" : "input-small", "data-parsley-type" : "number", "disabled" : "disabled"}}},
                             ]
                         }
                     }
@@ -171,7 +172,7 @@ class PaymentRenderer(Renderer):
                             "fields" : [
                                 {"ref" : {}},
                                 {"description" : {}},
-                                {"amount" : {"attributes" : {"class" : "input-small", "data-parsley-type" : "number"}}}
+                                {"amount" : {"attributes" : {"class" : "input-small", "data-parsley-type" : "number", "data-parsley-group" : "calculate"}}}
                             ]
                         }
                     }
@@ -183,7 +184,7 @@ class PaymentRenderer(Renderer):
                 "label_width" : 2,
                 "control_width" : 10,
                 "fields" : [
-                    {"available" : {"attributes" : {"class" : "input-small", "data-parsley-type" : "number"}}}
+                    {"available" : {"attributes" : {"class" : "input-small", "data-parsley-type" : "number", "disabled" : "disabled"}}}
                 ]
             }
         }

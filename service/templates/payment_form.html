@@ -74,21 +74,6 @@
 $(document).ready(function() {
 
     octopus.page = {};
-    octopus.page.data = {};
-
-    var form_xwalk = {
-        "ref" : "ref",
-        "description" : "description",
-        "invoice_date" : "invoice_date",
-        "expected_amount" : "expected_amount",
-        "actual_amount" : "actual_amount",
-        "vat_pc" : "vat_pc",
-        "overhead_pc" : "overhead_pc",
-        "overhead" : "overhead",
-        "available" : "available",
-        "notes" : "notes",
-        "state" : "state"
-    };
 
     function destroyParsley() {
         if (octopus.page.payment_form) {
@@ -97,31 +82,36 @@ $(document).ready(function() {
     }
 
     function bounceParsley() {
-        if (octopus.page.payment_form) {
-            octopus.page.payment_form.destroy();
-        }
+        destroyParsley();
         octopus.page.payment_form = $("#payment-form").parsley();
-        $("[data-parsley-type]").change(function() {
+
+        $("#payment-form").find(":input").bind("blur", function() {
             var pform = octopus.page.payment_form;
             var id = $(this).attr("id");
+            var valid = false;
             for (var i = 0; i < pform.fields.length; i++) {
                 if (pform.fields[i]["$element"].attr("id") == id) {
                     var field = pform.fields[i];
-                    field.validate();
+                    valid = field.validate();
                 }
             }
-            readForm();
-        })
-    }
 
-    function readForm() {
-        var form = {};
-        for (var field in form_xwalk) {
-            var val = $("[name='" + field + "']").val();
-            var target = form_xwalk[field];
-            form[target] = val;
-        }
-        octopus.page.data = form;
+            var group_valid = octopus.page.payment_form.isValid("calculate");
+
+            if ((valid === true || valid.length === 0) && group_valid) {
+                octopus.page.data = octopus.forms.form2obj({
+                    form_selector: "#payment-form",
+                    form_data_object: octopus.service.newPayment()
+                });
+
+                octopus.service.calculate(octopus.page.data);
+
+                octopus.forms.obj2form({
+                    form_selector: "#payment-form",
+                    form_data_object: octopus.page.data
+                });
+            }
+        });
     }
 
     octopus.forms.bindRepeatable({

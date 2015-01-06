@@ -1,6 +1,6 @@
 # overrides for the webapp deployment
 DEBUG = False
-PORT = 5017
+PORT = 5018
 SSL = False
 THREADED = True
 
@@ -15,10 +15,10 @@ ELASTIC_SEARCH_MAPPINGS = [
     "service.dao.PaymentDAO"
 ]
 
-# overwrite example configurations
-AUTOCOMPLETE_COMPOUND = None
-AUTOCOMPLETE_TERM = None
-QUERY_FILTERS = None
-QUERY_ROUTE = None
+# Service specific config
+#########################
 
+DEFAULT_VAT_PC = 20
+
+DEFAULT_OVERHEAD_PC = 10
 
