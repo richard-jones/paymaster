@@ -2,50 +2,64 @@ jQuery(document).ready(function($) {
     $.extend(octopus, {
         service : {
 
-            newPayment : function() {
-                return octopus.dataobj.newDataObj({
-                    schema : {
-                        ref : { type : "single", path : "ref", coerce : String},
-                        description : { type : "single", path : "description", coerce : String },
-                        invoice_date : { type : "single", path : "invoice", coerce: String },
-                        expected_amount : { type : "single", path : "expected_amount", coerce: parseFloat},
-                        actual_amount : { type: "single", path : "actual_amount", coerce: parseFloat },
-                        vat_pc : { type: "single", path : "vat_pc", coerce: parseFloat },
-                        vat : { type: "single", path : "vat", coerce: parseFloat },
-                        overhead_pc : { type: "single", path : "overhead_pc", coerce: parseFloat },
-                        overhead : { type: "single", path : "overhead", coerce: parseFloat },
-                        available : { type: "single", path : "available", coerce: parseFloat },
-                        notes : { type: "single", path : "notes", coerce: String },
-                        state : { type: "single", path : "state", coerce: String,
-                            allowed_values: ["not_estimated", "estimated", "not_invoiced", "invoiced", "paid_to_cl", "requested", "paid_to_me"]
-                        },
-                        expenses : { type: "list", path : "expenses",
-                            coerce: function(obj) {
-                                if (obj.ref) { obj.ref = String(obj.ref) }
-                                if (obj.amount) { obj.amount = parseFloat(obj.amount) }
-                                if (obj.allocate_to) { obj.allocate_to = String(obj.allocate_to) }
-                                return obj;
-                            }
-                        },
-                        shares : {type : "list", path: "shares",
-                            coerce: function(obj) {
-                                if (obj.who) { obj.who = String(obj.who) }
-                                if (obj.pc) { obj.pc = parseFloat(obj.pc) }
-                                if (obj.share_amount) { obj.share_amount = parseFloat(obj.share_amount) }
-                                if (obj.expenses) { obj.expenses = parseFloat(obj.expenses) }
-                                if (obj.total) { obj.total = parseFloat(obj.total) }
-                                return obj;
-                            }
-                        },
-                        central : {type: "list", path: "central",
-                            coerce : function(obj) {
-                                if (obj.ref) { obj.ref = String(obj.ref) }
-                                if (obj.description) { obj.description = String(obj.description) }
-                                if (obj.amount) { obj.amount = parseFloat(obj.amount) }
-                            }
+            newPayment : function(params) {
+                var raw = undefined;
+                if (params) {
+                    raw = params.raw;
+                }
+
+                var schema = {
+                    id : {type : "single", path : "id", coerce: String },
+                    created_date : {type : "single", path : "created_date", coerce: String},
+                    last_updated : {type : "single", path : "last_updated", coerce: String},
+
+                    ref : { type : "single", path : "ref", coerce : String},
+                    description : { type : "single", path : "description", coerce : String },
+                    invoice_date : { type : "single", path : "invoice", coerce: String },
+                    expected_amount : { type : "single", path : "expected_amount", coerce: parseFloat},
+                    actual_amount : { type: "single", path : "actual_amount", coerce: parseFloat },
+                    vat_pc : { type: "single", path : "vat_pc", coerce: parseFloat },
+                    vat : { type: "single", path : "vat", coerce: parseFloat },
+                    overhead_pc : { type: "single", path : "overhead_pc", coerce: parseFloat },
+                    overhead : { type: "single", path : "overhead", coerce: parseFloat },
+                    available : { type: "single", path : "available", coerce: parseFloat },
+                    notes : { type: "single", path : "notes", coerce: String },
+                    state : { type: "single", path : "state", coerce: String,
+                        allowed_values: ["not_estimated", "estimated", "not_invoiced", "invoiced", "paid_to_cl", "requested", "paid_to_me"]
+                    },
+                    expenses : { type: "list", path : "expenses",
+                        coerce: function(obj) {
+                            if (obj.ref) { obj.ref = String(obj.ref) }
+                            if (obj.amount) { obj.amount = parseFloat(obj.amount) }
+                            if (obj.allocate_to) { obj.allocate_to = String(obj.allocate_to) }
+                            return obj;
+                        }
+                    },
+                    shares : {type : "list", path: "shares",
+                        coerce: function(obj) {
+                            if (obj.who) { obj.who = String(obj.who) }
+                            if (obj.pc) { obj.pc = parseFloat(obj.pc) }
+                            if (obj.share_amount) { obj.share_amount = parseFloat(obj.share_amount) }
+                            if (obj.expenses) { obj.expenses = parseFloat(obj.expenses) }
+                            if (obj.total) { obj.total = parseFloat(obj.total) }
+                            return obj;
+                        }
+                    },
+                    central : {type: "list", path: "central",
+                        coerce : function(obj) {
+                            if (obj.ref) { obj.ref = String(obj.ref) }
+                            if (obj.description) { obj.description = String(obj.description) }
+                            if (obj.amount) { obj.amount = parseFloat(obj.amount) }
                         }
                     }
-                });
+                };
+
+                var options = {schema : schema};
+                if (raw) {
+                    options["raw"] = raw;
+                }
+
+                return octopus.dataobj.newDataObj(options);
             },
 
             calculate : function(payment) {

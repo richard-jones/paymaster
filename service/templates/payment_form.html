@@ -78,7 +78,17 @@
 {% endblock %}
 
 {% block extra_js_bottom %}
+
+{% if payment_id %}
 <script type="text/javascript">
+var edit_id = "{{payment_id}}";
+</script>
+{% endif %}
+
+<script type="text/javascript">
+
+
+
 $(document).ready(function() {
 
     octopus.page = {};
@@ -88,9 +98,16 @@ $(document).ready(function() {
             form_selector: "#payment-form",
             form_data_object: octopus.service.newPayment()
         });
+        if (octopus.page.payment_id) {
+            octopus.page.data.set_field("id", octopus.page.payment_id)
+        }
 
         octopus.service.calculate(octopus.page.data);
 
+        writeForm();
+    }
+
+    function writeForm() {
         octopus.forms.obj2form({
             form_selector: "#payment-form",
             form_data_object: octopus.page.data
@@ -101,6 +118,15 @@ $(document).ready(function() {
         if (octopus.page.payment_form) {
             octopus.page.payment_form.destroy();
         }
+    }
+
+    function updateTime() {
+        $("#last_saved").html("Last saved " + octopus.page.last_saved.fromNow());
+    }
+
+    function timedUpdate () {
+        updateTime();
+        setTimeout(timedUpdate, 1000);
     }
 
     function bounceParsley() {
@@ -171,17 +197,15 @@ $(document).ready(function() {
         // first ensure that we have the latest form data
         cycleForm();
 
-        function timedUpdate () {
-            $("#last_saved").html(octopus.page.last_saved.fromNow());
-            setTimeout(timedUpdate, 1000);
-        }
-
         function onSuccess(data) {
+            octopus.page.payment_id = data.id;
             octopus.page.last_saved = moment();
+            updateTime();
             if (!octopus.page.timedUpdates) {
                 timedUpdate();
                 octopus.page.timedUpdates = true;
             }
+            cycleForm();
         }
 
         function onError(data) {
@@ -189,14 +213,49 @@ $(document).ready(function() {
         }
 
         // now issue a create request on the CRUD API
-        octopus.crud.create({
-            dataobj : octopus.page.data,
-            objtype: "payment",
-            success : onSuccess,
-            complete : function() {},
-            error : onError
-        })
+        if (!octopus.page.payment_id) {
+            octopus.crud.create({
+                dataobj : octopus.page.data,
+                objtype: "payment",
+                success : onSuccess,
+                complete : function() {},
+                error : onError
+            })
+        } else {
+            octopus.crud.update({
+                id : octopus.page.payment_id,
+                dataobj: octopus.page.data,
+                objtype: "payment",
+                success : onSuccess,
+                complete : function() {},
+                error : onError
+            })
+        }
+
     });
+
+    function onLoad(data) {
+        octopus.page.data = octopus.service.newPayment({raw : data});
+        octopus.page.last_saved = moment(octopus.page.data.get_field("last_updated"));
+        writeForm();
+        timedUpdate();
+        octopus.page.timedUpdates = true;
+    }
+
+    function onLoadError(data) {
+        alert("Error loading record")
+    }
+
+    if (edit_id) {
+        octopus.page.payment_id = edit_id;
+        octopus.crud.retrieve({
+            id : octopus.page.payment_id,
+            objtype : "payment",
+            success : onLoad,
+            complete : function() {},
+            error : onLoadError
+        })
+    }
 
     bounceParsley();
 

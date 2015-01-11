@@ -48,10 +48,11 @@ from octopus.modules.es.query import blueprint as query
 app.register_blueprint(query, url_prefix="/query")
 
 @app.route("/form")
-def form():
+@app.route("/form/<payment_id>")
+def form(payment_id=None):
     from service.payment import PaymentFormContext
     fc = PaymentFormContext()
-    return fc.render_template()
+    return fc.render_template(payment_id=payment_id)
 
 @app.errorhandler(404)
 def page_not_found(e):
