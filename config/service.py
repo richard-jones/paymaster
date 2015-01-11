@@ -15,6 +15,24 @@ ELASTIC_SEARCH_MAPPINGS = [
     "service.dao.PaymentDAO"
 ]
 
+CRUD = {
+    "payment" : {
+        "model" : "service.models.CRUDPayment",
+        "create" : {
+            "enable" : True
+        },
+        "retrieve" : {
+            "enable" : True
+        },
+        "update" : {
+            "enable" : True
+        },
+        "delete" : {
+            "enable" : True
+        }
+    }
+}
+
 # Service specific config
 #########################
 

@@ -3,6 +3,14 @@
 {% block content %}
 
 <form class="form-horizontal" id="payment-form">
+
+    <div class="row">
+        <div class="col-md-4 col-md-offset-8">
+            <button id="save" class="btn btn-success pull-right" disabled="disabled" style="margin-bottom: 20px">Save</button>
+            <span id="last_saved" class="pull-right" style="padding-right: 30px">Not saved</span>
+        </div>
+    </div>
+
     <div class="row">
         <div class="col-md-6">
             {% autoescape off %}
@@ -75,6 +83,20 @@ $(document).ready(function() {
 
     octopus.page = {};
 
+    function cycleForm() {
+        octopus.page.data = octopus.forms.form2obj({
+            form_selector: "#payment-form",
+            form_data_object: octopus.service.newPayment()
+        });
+
+        octopus.service.calculate(octopus.page.data);
+
+        octopus.forms.obj2form({
+            form_selector: "#payment-form",
+            form_data_object: octopus.page.data
+        });
+    }
+
     function destroyParsley() {
         if (octopus.page.payment_form) {
             octopus.page.payment_form.destroy();
@@ -99,17 +121,13 @@ $(document).ready(function() {
             var group_valid = octopus.page.payment_form.isValid("calculate");
 
             if ((valid === true || valid.length === 0) && group_valid) {
-                octopus.page.data = octopus.forms.form2obj({
-                    form_selector: "#payment-form",
-                    form_data_object: octopus.service.newPayment()
-                });
+                cycleForm();
+            }
 
-                octopus.service.calculate(octopus.page.data);
-
-                octopus.forms.obj2form({
-                    form_selector: "#payment-form",
-                    form_data_object: octopus.page.data
-                });
+            if (octopus.page.payment_form.isValid()) {
+                $("#save").removeAttr("disabled");
+            } else {
+                $("#save").attr("disabled", "disabled");
             }
         });
     }
@@ -145,6 +163,39 @@ $(document).ready(function() {
         before_callback: destroyParsley,
         more_callback: bounceParsley,
         remove_callback: bounceParsley
+    });
+
+    $("#save").click(function(event) {
+        event.preventDefault();
+
+        // first ensure that we have the latest form data
+        cycleForm();
+
+        function timedUpdate () {
+            $("#last_saved").html(octopus.page.last_saved.fromNow());
+            setTimeout(timedUpdate, 1000);
+        }
+
+        function onSuccess(data) {
+            octopus.page.last_saved = moment();
+            if (!octopus.page.timedUpdates) {
+                timedUpdate();
+                octopus.page.timedUpdates = true;
+            }
+        }
+
+        function onError(data) {
+            alert("There was an error saving the record");
+        }
+
+        // now issue a create request on the CRUD API
+        octopus.crud.create({
+            dataobj : octopus.page.data,
+            objtype: "payment",
+            success : onSuccess,
+            complete : function() {},
+            error : onError
+        })
     });
 
     bounceParsley();

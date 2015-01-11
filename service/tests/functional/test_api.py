@@ -3,7 +3,7 @@ from octopus.modules.es import testindex
 from copy import deepcopy
 import json, requests
 
-TEST_URL = "http://localhost:5017/api/payment"
+TEST_URL = "http://localhost:5018/api/payment"
 
 RECORD = {
     "id" : "12345",
