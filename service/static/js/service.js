@@ -110,7 +110,7 @@ jQuery(document).ready(function($) {
                     }
                 }
 
-                var available = spendable - total_expenses;
+                var available = round2dp(spendable - total_expenses);
                 payment.set_field("available", available);
 
                 // deduct the central costs to get the shareable amount
