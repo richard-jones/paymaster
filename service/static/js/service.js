@@ -50,6 +50,7 @@ jQuery(document).ready(function($) {
                             if (obj.ref) { obj.ref = String(obj.ref) }
                             if (obj.description) { obj.description = String(obj.description) }
                             if (obj.amount) { obj.amount = parseFloat(obj.amount) }
+                            return obj;
                         }
                     }
                 };
@@ -77,7 +78,8 @@ jQuery(document).ready(function($) {
                 var overhead_pc = payment.get_field("overhead_pc") ? payment.get_field("overhead_pc") : 0;
 
                 // calculate the VAT and overheads, giving us the spendable amount
-                var vat = round2dp((vat_pc / 100) * incoming);
+                var vat = incoming - (incoming / (1.0 + (vat_pc / 100)));
+                vat = round2dp(vat);
                 payment.set_field("vat", vat);
 
                 var lessvat = incoming - vat;
@@ -131,7 +133,7 @@ jQuery(document).ready(function($) {
                     for (i = 0; i < partners.length; i++) {
                         var p = partners[i];
                         var share_pc = p.pc ? p.pc : 0;
-                        var share = (share_pc / 100) * shareable;   // will need to round this to 2 dp
+                        var share = round2dp((share_pc / 100) * shareable);
                         p.share_amount = share;
                         p.total = p.share_amount;
                         if (allocations.hasOwnProperty(p.who)) {

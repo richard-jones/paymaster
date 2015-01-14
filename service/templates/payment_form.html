@@ -83,6 +83,10 @@
 <script type="text/javascript">
 var edit_id = "{{payment_id}}";
 </script>
+{% else %}
+<script type="text/javascript">
+var edit_id = undefined;
+</script>
 {% endif %}
 
 <script type="text/javascript">
@@ -108,6 +112,55 @@ $(document).ready(function() {
     }
 
     function writeForm() {
+        // expand the form so that the data will fit
+        var obj = octopus.page.data;
+        var expenses = obj.get_field("expenses");
+        var shares = obj.get_field("shares");
+        var central = obj.get_field("central");
+
+        var available_expenses = $("#expenses_list").children().length;
+        var available_shares = $("#shares_list").children().length;
+        var available_central = $("#central_list").children().length;
+
+        var add_expenses = expenses.length - available_expenses;
+        if (add_expenses < 0) { add_expenses = 0 }
+
+        var add_shares = shares.length - available_shares;
+        if (add_shares < 0) { add_shares = 0 }
+
+        var add_central = central.length - available_central;
+        if (add_central < 0) { add_central = 0 }
+
+        for (var i = 0 ; i < add_expenses; i++) {
+            octopus.forms.repeat({
+                list_selector : "#expenses_list",
+                entry_prefix : "expenses",
+                enable_remove: true,
+                remove_selector: ".remove-expenses",
+                remove_callback: bounceParsley
+            })
+        }
+
+        for (i = 0 ; i < add_shares; i++) {
+            octopus.forms.repeat({
+                list_selector : "#shares_list",
+                entry_prefix : "shares",
+                enable_remove: true,
+                remove_selector: ".remove-shares",
+                remove_callback: bounceParsley
+            })
+        }
+
+        for (i = 0 ; i < add_central; i++) {
+            octopus.forms.repeat({
+                list_selector : "#central_list",
+                entry_prefix : "central",
+                enable_remove: true,
+                remove_selector: ".remove-central",
+                remove_callback: bounceParsley
+            })
+        }
+
         octopus.forms.obj2form({
             form_selector: "#payment-form",
             form_data_object: octopus.page.data
