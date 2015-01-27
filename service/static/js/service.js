@@ -1,13 +1,12 @@
 jQuery(document).ready(function($) {
     $.extend(octopus, {
+        page : {
+
+        },
+
         service : {
 
             newPayment : function(params) {
-                var raw = undefined;
-                if (params) {
-                    raw = params.raw;
-                }
-
                 var schema = {
                     id : {type : "single", path : "id", coerce: String },
                     created_date : {type : "single", path : "created_date", coerce: String},
@@ -55,12 +54,58 @@ jQuery(document).ready(function($) {
                     }
                 };
 
-                var options = {schema : schema};
-                if (raw) {
-                    options["raw"] = raw;
-                }
+                var Payment = function() {
+                    this.data = {};
+                    this.schema = {};
+                    this.allow_off_schema = false;
+                };
 
-                return octopus.dataobj.newDataObj(options);
+                var proto = $.extend(octopus.dataobj.DataObjPrototype, octopus.service.PaymentPrototype);
+                Payment.prototype = proto;
+
+                var dobj = new Payment();
+                dobj.schema = schema;
+                if (params) {
+                    if (params.raw) {
+                        dobj.data = params.raw;
+                    }
+                }
+                return dobj;
+            },
+
+            PaymentPrototype : {
+                amount : function() {
+                    var actual = this.get_field("actual_amount");
+                    if (actual) { return actual }
+                    return this.get_field("expected_amount");
+                },
+
+                total_expenses : function() {
+                    var expenses = this.get_field("expenses");
+                    var tot = 0;
+                    for (var i = 0; i < expenses.length; i++) {
+                        tot += expenses[i].amount;
+                    }
+                    return tot;
+                },
+
+                share_summary : function() {
+                    var shares = this.get_field("shares");
+                    var summary = {};
+                    for (var i = 0; i < shares.length; i++) {
+                        summary[shares[i].who] = shares[i];
+                    }
+                    return summary;
+                },
+
+                total_central : function() {
+                    var central = this.get_field("central");
+                    var tot = 0;
+                    for (var i = 0; i < central.length; i++) {
+                        tot += central[i].amount;
+                    }
+                    return tot;
+                }
             },
 
             calculate : function(payment) {
@@ -142,6 +187,16 @@ jQuery(document).ready(function($) {
                         }
                     }
                 }
+            },
+
+            formFrag : function(params) {
+                var callback = params.callback;
+                $.ajax({
+                    type: "GET",
+                    dataType: "html",
+                    url: octopus.config.fragments_endpoint + "/payment_form",
+                    success: callback
+                })
             }
         }
     });

@@ -21,7 +21,7 @@ if __name__ == "__main__":
         print "STARTED IN REMOTE DEBUG MODE"
 
 
-from flask import render_template
+from flask import render_template, abort
 from octopus.lib.webapp import custom_static
 
 @app.route("/")
@@ -53,6 +53,14 @@ def form(payment_id=None):
     from service.payment import PaymentFormContext
     fc = PaymentFormContext()
     return fc.render_template(payment_id=payment_id)
+
+@app.route("/frag/<frag_id>")
+def fragment(frag_id):
+    if frag_id == "payment_form":
+        from service.payment import PaymentFormContext
+        fc = PaymentFormContext()
+        return fc.render_template("_form.html")
+    abort(404)
 
 @app.errorhandler(404)
 def page_not_found(e):
