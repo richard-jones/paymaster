@@ -187,16 +187,6 @@ jQuery(document).ready(function($) {
                         }
                     }
                 }
-            },
-
-            formFrag : function(params) {
-                var callback = params.callback;
-                $.ajax({
-                    type: "GET",
-                    dataType: "html",
-                    url: octopus.config.fragments_endpoint + "/payment_form",
-                    success: callback
-                })
             }
         }
     });

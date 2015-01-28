@@ -188,3 +188,7 @@ class PaymentRenderer(Renderer):
                 ]
             }
         }
+
+def raw_form():
+    fc = PaymentFormContext()
+    return fc.render_template("_form.html")

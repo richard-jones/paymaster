@@ -46,11 +46,15 @@ CRUD = {
     }
 }
 
+FRAGMENTS = {
+    "payment_form" : {
+        "function" : "service.payment.raw_form"
+    }
+}
+
 # Service specific config
 #########################
 
 DEFAULT_VAT_PC = 20
 
 DEFAULT_OVERHEAD_PC = 10
-
-CLIENTJS_FRAGMENTS_ENDPOINT = "/frag"

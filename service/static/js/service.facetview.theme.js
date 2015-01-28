@@ -149,7 +149,7 @@ jQuery(document).ready(function($) {
         $(".edit_link", context).click(function(event) {
             event.preventDefault();
             var id = $(this).attr("data-id");
-            octopus.service.formFrag({callback: renderFormClosure(id, context)});
+            octopus.fragments.frag({id : "payment_form", callback: renderFormClosure(id, context)});
         })
     }
 
